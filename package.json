@@ -1,0 +1,29 @@
+{
+  "name": "storybot",
+  "version": "1.0.0",
+  "description": "Storybot built with Dialogflow for urban storytelling.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yibo-Wen/StoryBot.git"
+  },
+  "keywords": [
+    "Chatbot",
+    "Dialogflow"
+  ],
+  "author": "Yibo Wen",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Yibo-Wen/StoryBot/issues"
+  },
+  "homepage": "https://github.com/Yibo-Wen/StoryBot#readme",
+  "dependencies": {
+    "dialogflow": "^1.2.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "socket.io": "^4.2.0"
+  }
+}
