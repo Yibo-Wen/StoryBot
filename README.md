@@ -1,2 +1,2 @@
 # StoryBot
-Conversational agent built with Tock and Python to explore narrative forms for describing changes to urban environments.
+Conversational agent built with Dialogflow and Node.js to explore narrative forms for describing changes to urban environments.
