@@ -1,6 +1,6 @@
 {
   "name": "storybot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Storybot built with Dialogflow for urban storytelling.",
   "main": "app.js",
   "scripts": {
