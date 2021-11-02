@@ -63,6 +63,35 @@ class MessageRouter {
       return this._sendEventToAgent(customer, 'WELCOME');
     }
 
+    return this._sendTextToOperator(text, customer)
+      .then(()=>{
+        if(customer.story===CustomerStore.BEFORE_STORY){
+
+        }
+        else if(customer.story===CustomerStore.DURING_STORY){
+
+        }
+        else{
+
+        }
+      })
+      .then(responses => {
+        // get response from Dialogflow
+        const response = response[0];
+        const reply = response.queryResult.fulfillmentText;
+        const detectedIntent = response.queryResult.intent.displayName;
+        if(detectedIntent==='Start Story'){
+          customer.story = CustomerStore.DURING_STORY;
+          this.customerStore.setCustomer(customerId, customer);
+        }
+        else if(detectedIntent==='Done'){
+          customer.story = CustomerStore.AFTER_STORY;
+          this.customerStore.setCustomer(customerId, customer);
+        }
+        this._sendTextToOperator(reply, customer, true);
+        return speech;
+      })
+
     // Since all customer messages should show up in the operator chat,
     // we now send this text to all operators
     return this._sendTextToOperator(text, customer)
@@ -72,6 +101,7 @@ class MessageRouter {
         return this._sendTextToAgent(customer, text);
       })
       .then(responses => {
+        // get response from Dialogflow
         const response = responses[0];
         // If the customer is in agent mode, we'll forward the agent's response to the customer.
         // If not, just discard the agent's response.
