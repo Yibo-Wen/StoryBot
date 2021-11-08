@@ -60,19 +60,20 @@ class MessageRouter {
     // If this is the first time we've seen this customer,
     // we should trigger the default welcome intent.
     if (customer.isNew) {
-      return this._sendEventToAgent(customer, 'WELCOME');
+      return this._sendEventToAgent(customer, text, 'WELCOME');
     }
 
     return this._sendTextToOperator(text, customer)
       .then(()=>{
         if(customer.story===CustomerStore.BEFORE_STORY){
-
+          return this._sendTextToAgent(customer, text);
         }
         else if(customer.story===CustomerStore.DURING_STORY){
-
+          return this._sendEventToAgent(customer, text, customer.events[0]);
+          //return this._sendTextToAgent(customer, text);
         }
         else{
-
+          return this._sendTextToAgent(customer, 'Done');
         }
       })
       .then(responses => {
@@ -123,12 +124,16 @@ class MessageRouter {
   }
 
   // Uses the Dialogflow client to send a event to the agent
-  _sendEventToAgent (customer, eventName) {
+  _sendEventToAgent (customer, input, eventName) {
     console.log(`Sending ${eventName} event to agent`);
     return this.client.detectIntent({
       // Use the customer ID as Dialogflow's session ID
       session: this.client.sessionPath(this.projectId, customer.id),
       queryInput: {
+        text:{
+          text: input,
+          languageCode: 'en'
+        },
         event: {
           name: eventName,
           languageCode: 'en'
