@@ -17,6 +17,18 @@ class CustomerStore {
     return ["RECREATION","FOOD","CULTURE","SERVICE"];
   }
 
+  static get BEFORE_STORY () {
+    return 'BEFORE';
+  }
+
+  static get DURING_STORY () {
+    return 'DURING';
+  }
+
+  static get AFTER_STORY () {
+    return 'AFTER';
+  }
+
   getOrCreateCustomer (customerId) {
     if (!customerId || customerId.length === 0) {
       return Promise.reject(new Error('You must specify a customer id'));
@@ -31,7 +43,8 @@ class CustomerStore {
         .setCustomer(customerId, {
           id: customerId,
           mode: CustomerStore.MODE_AGENT,
-          events: CustomerStore.EVENT_LIST
+          events: CustomerStore.EVENT_LIST,
+          story: CustomerStore.BEFORE_STORY
         })
         .then((newCustomer) => {
           // Attach this temporary flag to indicate that the customer is
