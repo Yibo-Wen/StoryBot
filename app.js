@@ -7,6 +7,9 @@ const io = require('socket.io')(http);
 const CustomerStore = require('./customerStore.js');
 const MessageRouter = require('./messageRouter.js');
 
+// Load custom routers
+const dialogueRouter = require('./routes/dialogueRoutes');
+
 // Load process.env
 require('dotenv').config();
 
@@ -48,6 +51,9 @@ app.get('/customer', (req, res) => {
 app.get('/operator', (req, res) => {
   res.sendFile(`${__dirname}/static/operator.html`);
 });
+
+// Backend API for testing and direct accessing
+app.use('/api/dialogue', dialogueRouter);
 
 // Begin responding to websocket and http requests
 messageRouter.handleConnections();

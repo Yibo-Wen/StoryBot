@@ -66,19 +66,22 @@ class MessageRouter {
     return this._sendTextToOperator(text, customer)
       .then(()=>{
         if(customer.story===CustomerStore.BEFORE_STORY){
+          console.log('BEFORE_STORY');
           return this._sendTextToAgent(customer, text);
         }
         else if(customer.story===CustomerStore.DURING_STORY){
+          console.log('DURING_STORY');
           return this._sendEventToAgent(customer, text, customer.events[0]);
           //return this._sendTextToAgent(customer, text);
         }
         else{
+          console.log('DONE');
           return this._sendTextToAgent(customer, 'Done');
         }
       })
       .then(responses => {
         // get response from Dialogflow
-        const response = response[0];
+        const response = responses[0];
         const reply = response.queryResult.fulfillmentText;
         const detectedIntent = response.queryResult.intent.displayName;
         if(detectedIntent==='Start Story'){
@@ -90,6 +93,7 @@ class MessageRouter {
           this.customerStore.setCustomer(customerId, customer);
         }
         this._sendTextToOperator(reply, customer, true);
+        const speech = response.queryResult.fulfillmentText;
         return speech;
       })
 
