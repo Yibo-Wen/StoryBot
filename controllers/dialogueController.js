@@ -3,6 +3,18 @@ const { SessionsClient } = require('dialogflow');
 const keyPath = process.env.DF_SERVICE_ACCOUNT_PATH;
 const projectId = process.env.DF_PROJECT_ID;
 
+const { v4: uuidv4 } = require('uuid');
+
+exports.createDialogue = (req,res,next)=>{
+    const costumerId = uuidv4();
+    res.status(200).json({
+        status: 'success',
+        data: {
+            costumerId,
+        },
+    });
+}
+
 exports.getResponse = async (req,res,next)=>{
     if(!req.body.text){
         console.error('Empty text to agent');

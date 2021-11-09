@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.route('/').get();
 
-router.route('/new').post();
+router.route('/new').get(dialogueController.createDialogue);
 
 router.route('/:id').patch(dialogueController.getResponse);
 
