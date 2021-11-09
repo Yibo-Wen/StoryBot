@@ -1,5 +1,6 @@
 // Load third party dependencies
-const app = require('express')();
+const express = require('express');
+const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
@@ -53,6 +54,7 @@ app.get('/operator', (req, res) => {
 });
 
 // Backend API for testing and direct accessing
+app.use(express.json());
 app.use('/api/dialogue', dialogueRouter);
 
 // Begin responding to websocket and http requests

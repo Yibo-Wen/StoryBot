@@ -1,5 +1,5 @@
 const express = require('express');
-// const userController = require('../controllers/userController');
+const dialogueController = require('../controllers/dialogueController');
 
 const router = express.Router();
 
@@ -7,4 +7,6 @@ router.route('/').get();
 
 router.route('/new').post();
 
-router.route('/:id').patch();
+router.route('/:id').patch(dialogueController.getResponse);
+
+module.exports = router;
