@@ -9,4 +9,6 @@ router.route('/new').get(dialogueController.createDialogue);
 
 router.route('/:id').patch(dialogueController.getResponse);
 
+router.route('/location/:id').post(dialogueController.saveLocation);
+
 module.exports = router;
