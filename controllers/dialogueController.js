@@ -3,16 +3,40 @@ const { SessionsClient } = require('dialogflow');
 const keyPath = process.env.DF_SERVICE_ACCOUNT_PATH;
 const projectId = process.env.DF_PROJECT_ID;
 const db = require('../firebaseConfig');
+const firestore = require('firebase-admin/firestore');
 
 const { v4: uuidv4 } = require('uuid');
 
 exports.saveLocation = async (req,res,next)=>{
-    const a = new GeoPoint(req.body.latitude,req.body.longitude);
-    const docRef = db.collection('users').doc(req.params.id);
-    // Atomically add a new region to the "regions" array field.
-    const unionRes = await docRef.update({
-      locations: FieldValue.arrayUnion(a)
-    });
+    try{
+      if(!req.body.latitude || !req.body.longitude || !req.body.activity){
+        throw new Error("Invalid Request Body Params");
+      }
+      const activity = req.body.activity;
+      const loc = new firestore.GeoPoint(req.body.latitude,req.body.longitude);
+      const docRef = db.collection('users').doc(req.params.id);
+
+      const doc = await docRef.get();
+      if (!doc.exists) {
+        console.log('No such document!');
+        //creating a document with the given user
+        const result = await docRef.set({
+          [activity] : loc
+        })
+        console.log('Adding new user with location to firestore...');
+      } else {
+        console.log('Found document');
+        // updating the document
+        const result = await docRef.update({
+          [activity] : loc
+      });
+      }
+      res.status(200).json({
+        status:"success"
+      })
+    } catch(err) {
+      next(err);
+    }
 }
 
 exports.createDialogue = (req,res,next)=>{

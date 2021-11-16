@@ -56,6 +56,9 @@ app.get('/operator', (req, res) => {
 // Backend API for testing and direct accessing
 app.use(express.json());
 app.use('/api/dialogue', dialogueRouter);
+app.use((err, req, res, next) => {
+  res.status(500).send({ error: err.message });
+});
 
 // Begin responding to websocket and http requests
 messageRouter.handleConnections();
