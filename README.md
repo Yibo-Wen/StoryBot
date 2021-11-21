@@ -21,7 +21,7 @@ The backend is written using the Node.js [Express](https://expressjs.com/) frame
 To configure the server, there are several environment variables that the application looks for on startup inside `.env` file.
 
 `PORT` - The port for the server to listen on.   
-`DF_SERVICE_ACCOUNT_PATH` - The path of Dialogflow service account key, usually put under the resource folder with the name `serviceAccountKey.json`. (Please download the file from Dialogflow console) 
+`DF_SERVICE_ACCOUNT_PATH` - The path of Dialogflow service account key, usually put under the resource folder with the name `serviceAccountKey.json`. Please download the file from Dialogflow console.   
 `DF_PROJECT_ID` - The project id of Dialogflow. (Please refer to the Dialogflow console of the project)
 
 ## Endpoints
