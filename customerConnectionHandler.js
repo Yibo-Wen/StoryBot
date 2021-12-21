@@ -14,9 +14,7 @@ class CustomerConnectionHandler extends ChatConnectionHandler {
 
   init (customerId) {
     console.log('A customer joined: ', customerId);
-    this.router._sendConnectionStatusToOperator(customerId)
-    // Determine if this is a new or known customer
-      .then(() => this.router.customerStore.getOrCreateCustomer(customerId))
+    this.router.customerStore.getOrCreateCustomer(customerId)
       .then(customer => {
         console.log('A customer connected: ', customer);
         // If new, begin the Dialogflow conversation
@@ -46,8 +44,7 @@ class CustomerConnectionHandler extends ChatConnectionHandler {
       this._gotCustomerInput(message,id);
     });
     this.socket.on(AppConstants.EVENT_DISCONNECT, () => {
-      console.log('Customer disconnected');
-      this.router._sendConnectionStatusToOperator(id, true);
+      console.log(`Customer ${id} disconnected`);
       this.onDisconnect();
     });
   }

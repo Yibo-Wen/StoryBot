@@ -40,17 +40,12 @@ const messageRouter = new MessageRouter({
   customerStore: customerStore,
   dialogflowClient: dialogflowClient,
   projectId: projectId,
-  customerRoom: io.of('/customer'),
-  operatorRoom: io.of('/operator')
+  customerRoom: io.of('/customer')
 });
 
-// Serve static html files for the customer and operator clients
+// Serve static html files for the customer clients
 app.get('/customer', (req, res) => {
   res.sendFile(`${__dirname}/static/customer.html`);
-});
-
-app.get('/operator', (req, res) => {
-  res.sendFile(`${__dirname}/static/operator.html`);
 });
 
 // Backend API for testing and direct accessing

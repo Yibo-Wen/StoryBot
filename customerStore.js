@@ -5,14 +5,6 @@ class CustomerStore {
     this.customers = {};
   }
 
-  static get MODE_AGENT () {
-    return 'AGENT';
-  }
-
-  static get MODE_OPERATOR () {
-    return 'OPERATOR';
-  }
-
   static get EVENT_LIST() {
     return ["RECREATION","FOOD","CULTURE","SERVICE"];
   }
