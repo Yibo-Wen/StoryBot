@@ -11,15 +11,13 @@ class MessageRouter {
     this.projectId = projectId;
     // An object that handles customer data persistence
     this.customerStore = customerStore;
-    // Socket.io rooms for customers
-    this.customerRoom = io.of('/customer');
     // All active connections to customers
     this.customerConnections = {};
   }
 
   // Attach event handlers and begin handling connections
   handleConnections () {
-    this.customerRoom.on('connection', this._handleCustomerConnection.bind(this));
+    //this.customerRoom.on('connection', this._handleCustomerConnection.bind(this));
   }
 
   // Creates an object that stores a customer connection and has

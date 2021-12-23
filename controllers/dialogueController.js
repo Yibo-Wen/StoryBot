@@ -40,32 +40,29 @@ class DialogueController {
       next(err);
     }
   }
-  createDialogue = (req,res,next)=>{
+  createDialogue = async (req,res,next)=>{
     const customerId = uuidv4();
     console.log('New Customer: ', customerId);
-    this.store.getOrCreateCustomer(customerId)
+    const responses = await this.store.getOrCreateCustomer(customerId)
       .then(customer => {
         // If new, begin the Dialogflow conversation
         if (customer.isNew) {
           console.log('Chang isNew to false');
           customer.isNew = false;
-          this.router._sendEventToAgent(customer, null,'WELCOME')
-            .then(responses => {
-              res.status(200).json({
-                status: 'success',
-                data: {
-                    id: customerId,
-                    response: responses[0],
-                },
-              });
-            })
+          return this.router._sendEventToAgent(customer, null,'WELCOME')
+            .catch(err => next(err));
         }
       })
-      .catch(error => {
-        // Log this unspecified error to the console and
-        // inform the customer there has been a problem
-        console.log('Error after customer connection: ', error);
+      .catch(err => next(err));
+    
+      res.status(200).json({
+        status: 'success',
+        data: {
+            id: customerId,
+            response: responses[0].queryResult.fulfillmentText,
+        },
       });
+      
   }
 
   getResponse = async (req,res,next)=>{

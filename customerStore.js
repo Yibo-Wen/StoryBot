@@ -34,7 +34,6 @@ class CustomerStore {
       return this
         .setCustomer(customerId, {
           id: customerId,
-          mode: CustomerStore.MODE_AGENT,
           events: CustomerStore.EVENT_LIST,
           story: CustomerStore.BEFORE_STORY
         })

@@ -1,7 +1,7 @@
 const express = require('express');
-const dialogueController = require('../controllers/dialogueController');
-const messageRouter = require('../messageRouter');
-const customerStore = require('../customerStore');
+const DialogueController = require('../controllers/dialogueController');
+const MessageRouter = require('../messageRouter');
+const CustomerStore = require('../customerStore');
 
 // Load process.env
 require('dotenv').config();
@@ -12,13 +12,17 @@ const dialogflowClient = new SessionsClient({
   keyFilename: process.env.DF_SERVICE_ACCOUNT_PATH
 })
 
-const store = new customerStore();
-const router = new messageRouter({
-    customerStore: customerStore,
+const store = new CustomerStore();
+const messageRouter = new MessageRouter({
+    customerStore: store,
     dialogflowClient: dialogflowClient,
     projectId: process.env.DF_PROJECT_ID
   });
-const controller = new dialogueController(store,router);
+console.log(store);
+const controller = new DialogueController({
+    customerStore: store,
+    messageRouter: messageRouter
+});
 
 const router = express.Router();
 

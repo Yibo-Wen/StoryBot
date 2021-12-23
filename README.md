@@ -3,16 +3,16 @@ Conversational agent built with Dialogflow, Node.js and Firebase to explore narr
 
 ##  Table of Contents
 - [StoryBot Backend](#storybot-backend)
-  - [Table of Contents](#table-of-contents)
-  - [Basics](#basics)
-  - [Configuration](#configuration)
-  - [Endpoints](#endpoints)
-    - [Start Dialogue](#start-dialogue)
-    - [Get Response](#get-response)
-    - [Save Location](#save-location)
-  - [Local Hosting:](#local-hosting)
-  - [Deployment (TBD):](#deployment-tbd)
-  - [References:](#references)
+	- [Table of Contents](#table-of-contents)
+	- [Basics](#basics)
+	- [Configuration](#configuration)
+	- [Endpoints](#endpoints)
+		- [Start Dialogue](#start-dialogue)
+		- [Get Response](#get-response)
+		- [Save Location](#save-location)
+	- [Local Hosting:](#local-hosting)
+	- [Deployment (TBD):](#deployment-tbd)
+	- [References:](#references)
 
 ## Basics
 The backend is written using the Node.js [Express](https://expressjs.com/) framework. It utilizes the Firebase database [Firestore](https://firebase.google.com/docs/firestore) for storage of data. The chatbot is developed using [Dialogflow](https://cloud.google.com/dialogflow). 
@@ -30,15 +30,16 @@ To configure the server, there are several environment variables that the applic
 
 **GET `/api/dialogue/new`**
 
-Request to start a new dialogue session
+Request to start a new dialogue session, no user input required
 
 Example response body:
 ```json
 {
-	"status": "success",
-	"data": {
-		"costumerId": "760fca3d-4634-476c-9aba-7cd542ae3b1c"
-	}
+    "status": "success",
+    "data": {
+        "id": "bc12634e-f0ba-42fd-b1e3-fc982f4f79cf",
+        "response": "Hi! I'm a StoryBot designed for telling stories about urban planning. Can you tell me your name?"
+    }
 }
 ```
 
