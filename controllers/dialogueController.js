@@ -40,7 +40,7 @@ class DialogueController {
       next(err);
     }
   }
-  
+
   createDialogue = async (req,res,next)=>{
     const customerId = uuidv4();
     console.log('New Customer: ', customerId);
@@ -50,6 +50,7 @@ class DialogueController {
         if (customer.isNew) {
           console.log('Chang isNew to false');
           customer.isNew = false;
+          this.store.setCustomer(customerId, customer);
           return this.router._sendEventToAgent(customer, null,'WELCOME')
             .catch(err => next(err));
         }
@@ -73,7 +74,7 @@ class DialogueController {
     }
     console.log('Continue Customer: ', req.params.id);
 
-    const response = await this.store.getOrCreateCustomer(customerId)
+    const response = await this.store.getOrCreateCustomer(req.params.id)
       .then(customer => {
         // If new, throw error
         if (customer.isNew) {

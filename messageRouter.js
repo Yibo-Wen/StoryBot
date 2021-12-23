@@ -41,9 +41,14 @@ class MessageRouter {
       .then(responses => {
         // get response from Dialogflow
         const response = responses[0];
+        console.log(response);
+        console.log(response.queryResult.parameters.fields);
         const reply = response.queryResult.fulfillmentText;
         const detectedIntent = response.queryResult.intent.displayName;
-        if(detectedIntent==='Start Story'){
+        if(detectedIntent === 'Default Fallback Intent'){
+          console.log('Could not understand, try again');
+        }
+        else if(detectedIntent==='Default Welcome Intent'){
           customer.story = CustomerStore.DURING_STORY;
           this.customerStore.setCustomer(customerId, customer);
         }
@@ -72,7 +77,7 @@ class MessageRouter {
       return this._sendTextToAgent(customer, text);
     }
     else if(customer.story===CustomerStore.DURING_STORY){
-      console.log('DURING_STORY: sending event ',customer.events[0]);
+      console.log('DURING_STORY: sending event',customer.events[0]);
       return this._sendEventToAgent(customer, text, customer.events[0]);
     }
     else{
@@ -83,7 +88,7 @@ class MessageRouter {
 
   // Uses the Dialogflow client to send a event to the agent
   _sendEventToAgent (customer, input, eventName) {
-    console.log(`Sending ${eventName} event to agent`);
+    console.log(`Sending ${eventName} event with input "${input}" to agent`);
     return this.client.detectIntent({
       // Use the customer ID as Dialogflow's session ID
       session: this.client.sessionPath(this.projectId, customer.id),
