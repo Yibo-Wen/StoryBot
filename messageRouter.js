@@ -51,8 +51,16 @@ class MessageRouter {
           customer.story = CustomerStore.AFTER_STORY;
           this.customerStore.setCustomer(customerId, customer);
         }
-        const speech = response.queryResult.fulfillmentText;
-        return speech;
+        // All required parameters are present, move on to the next event
+        else if (response.queryResult.allRequiredParamsPresent){
+          this._toNextEvent (customerId, customer)
+            .catch(err => {
+              console.log('conversation completed, wrapping up');
+              customer.story = CustomerStore.AFTER_STORY;
+              this.customerStore.setCustomer(customerId, customer);
+            });
+        }
+        return reply;
       })
 
   }
@@ -64,9 +72,8 @@ class MessageRouter {
       return this._sendTextToAgent(customer, text);
     }
     else if(customer.story===CustomerStore.DURING_STORY){
-      console.log('DURING_STORY');
+      console.log('DURING_STORY: sending event ',customer.events[0]);
       return this._sendEventToAgent(customer, text, customer.events[0]);
-      //return this._sendTextToAgent(customer, text);
     }
     else{
       console.log('DONE');
@@ -118,7 +125,7 @@ class MessageRouter {
   }
 
   // Continue to the next event and return the Response from Dialogflow
-  _getNextEvent (customerId, customer){
+  _toNextEvent (customerId, customer){
     console.log('Call the next event');
     const event = customer.events[0];
     if (customer.events.length==0) {
@@ -129,11 +136,7 @@ class MessageRouter {
 
     // Remove event from current customer
     customer.events.shift();
-    return this.customerStore
-      .setCustomer(customerId, customer)
-      .then(() => {
-        return this._sendEventToAgent(customer,event);
-      });
+    return this.customerStore.setCustomer(customerId, customer);
   }
 
 }

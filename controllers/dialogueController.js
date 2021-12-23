@@ -40,6 +40,7 @@ class DialogueController {
       next(err);
     }
   }
+  
   createDialogue = async (req,res,next)=>{
     const customerId = uuidv4();
     console.log('New Customer: ', customerId);
@@ -66,33 +67,30 @@ class DialogueController {
   }
 
   getResponse = async (req,res,next)=>{
+
     if(!req.body.text){
         console.error('Empty text to agent');
     }
+    console.log('Continue Customer: ', req.params.id);
 
-    const dialogflowClient = new SessionsClient({
-        keyFilename: process.env.DF_SERVICE_ACCOUNT_PATH,
-        projectId: req.params.id
-      })
-    
-    const response =  await dialogflowClient.detectIntent({
-      // Use the customer ID as Dialogflow's session ID
-      session: dialogflowClient.sessionPath(process.env.DF_PROJECT_ID, req.params.id),
-      queryInput: {
-        text: {
-          text: req.body.text,
-          languageCode: 'en'
+    const response = await this.store.getOrCreateCustomer(customerId)
+      .then(customer => {
+        // If new, throw error
+        if (customer.isNew) {
+          console.error('Invalid Customer');
+          throw new Error('New Customer, please start conversation first');
         }
-      }
-    });
-    const result = response[0].queryResult.fulfillmentText;
-
-    res.status(200).json({
+        return this.router._routeCustomer(req.body.text,customer,req.params.id);
+      })
+      .catch(err => next(err));
+    
+      res.status(200).json({
         status: 'success',
         data: {
-            result,
+            response: response,
         },
-    });
+      });
+
   }
 }
 

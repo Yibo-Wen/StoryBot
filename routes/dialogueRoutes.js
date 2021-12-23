@@ -18,7 +18,6 @@ const messageRouter = new MessageRouter({
     dialogflowClient: dialogflowClient,
     projectId: process.env.DF_PROJECT_ID
   });
-console.log(store);
 const controller = new DialogueController({
     customerStore: store,
     messageRouter: messageRouter
