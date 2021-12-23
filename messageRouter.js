@@ -4,7 +4,7 @@ const CustomerConnectionHandler = require('./customerConnectionHandler.js');
 
 // Routes messages between connected customers and Dialogflow agent
 class MessageRouter {
-  constructor ({ customerStore, dialogflowClient, projectId, customerRoom }) {
+  constructor ({ customerStore, dialogflowClient, projectId }) {
     // Dialogflow client instance
     this.client = dialogflowClient;
     // Dialogflow project id
@@ -12,7 +12,7 @@ class MessageRouter {
     // An object that handles customer data persistence
     this.customerStore = customerStore;
     // Socket.io rooms for customers
-    this.customerRoom = customerRoom;
+    this.customerRoom = io.of('/customer');
     // All active connections to customers
     this.customerConnections = {};
   }

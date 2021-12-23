@@ -1,13 +1,15 @@
 // Load and instantiate the Dialogflow client library
 const { SessionsClient } = require('dialogflow');
-const keyPath = process.env.DF_SERVICE_ACCOUNT_PATH;
-const projectId = process.env.DF_PROJECT_ID;
 const db = require('../firebaseConfig');
 const firestore = require('firebase-admin/firestore');
-
 const { v4: uuidv4 } = require('uuid');
 
-exports.saveLocation = async (req,res,next)=>{
+class DialogueController {
+  constructor ({customerStore,messageRouter}) {
+    this.store = customerStore;
+    this.router = messageRouter;
+  }
+  saveLocation = async (req,res,next)=>{
     try{
       if(!req.body.latitude || !req.body.longitude || !req.body.activity){
         throw new Error("Invalid Request Body Params");
@@ -37,25 +39,43 @@ exports.saveLocation = async (req,res,next)=>{
     } catch(err) {
       next(err);
     }
-}
+  }
+  createDialogue = (req,res,next)=>{
+    const customerId = uuidv4();
+    console.log('New Customer: ', customerId);
+    this.store.getOrCreateCustomer(customerId)
+      .then(customer => {
+        // If new, begin the Dialogflow conversation
+        if (customer.isNew) {
+          console.log('Chang isNew to false');
+          customer.isNew = false;
+          this.router._sendEventToAgent(customer, null,'WELCOME')
+            .then(responses => {
+              res.status(200).json({
+                status: 'success',
+                data: {
+                    id: customerId,
+                    response: responses[0],
+                },
+              });
+            })
+        }
+      })
+      .catch(error => {
+        // Log this unspecified error to the console and
+        // inform the customer there has been a problem
+        console.log('Error after customer connection: ', error);
+      });
+  }
 
-exports.createDialogue = (req,res,next)=>{
-    const costumerId = uuidv4();
-    res.status(200).json({
-        status: 'success',
-        data: {
-            costumerId,
-        },
-    });
-}
-
-exports.getResponse = async (req,res,next)=>{
+  getResponse = async (req,res,next)=>{
     if(!req.body.text){
         console.error('Empty text to agent');
     }
 
     const dialogflowClient = new SessionsClient({
-        keyFilename: process.env.DF_SERVICE_ACCOUNT_PATH
+        keyFilename: process.env.DF_SERVICE_ACCOUNT_PATH,
+        projectId: req.params.id
       })
     
     const response =  await dialogflowClient.detectIntent({
@@ -76,4 +96,7 @@ exports.getResponse = async (req,res,next)=>{
             result,
         },
     });
+  }
 }
+
+module.exports = DialogueController;
