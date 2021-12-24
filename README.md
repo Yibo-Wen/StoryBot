@@ -49,9 +49,9 @@ Example response body:
 Request to get response from a continuing dialogue session
 
 Example request body:
-```aidl
+```json
 {
-	"text": "I don't like UCLA."
+	"text": "My name is Yibo."
 }
 ```
 
@@ -60,7 +60,44 @@ Example response body:
 {
 	"status": "success",
 	"data": {
-		"result": "Hi! I'm a StoryBot designed for telling stories about urban planning. Can you tell me your name?"
+		"response": "Great, Yibo. Please imagine a perfect day living in a future urban area. Why not start with a recreational activity that you want to do the most?",
+		"param": [
+			{
+				"key": "person",
+				"value": "Yibo"
+			}
+		]
+	}
+}
+```
+
+Example request body:
+```json
+{
+	"text": "I love cooking."
+}
+```
+
+Example response body:
+```json
+{
+	"status": "success",
+	"data": {
+		"response": "Great! Let's go on to food! Which restaurant would you go?",
+		"param": [
+			{
+				"key": "indoor_activity",
+				"value": [
+					"bake"
+				]
+			},
+			{
+				"key": "outdoor_activity",
+				"value": [
+					"tennis"
+				]
+			}
+		]
 	}
 }
 ```
@@ -71,7 +108,7 @@ Example response body:
 Request to save a location pointed by user
 
 Example request body:
-```aidl
+```json
 {
 	"latitude": 34.0689,
 	"longitude": -118.4452,
@@ -92,7 +129,7 @@ Example response body:
 3. Run `node app.js` in terminal
 
 ## Deployment (TBD):
-Hosting on Heroku/Firebase
+Hosting on Heroku
 
 ## References:
 https://github.com/dialogflow/agent-human-handoff-nodejs

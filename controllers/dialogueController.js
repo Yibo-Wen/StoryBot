@@ -51,7 +51,7 @@ class DialogueController {
           console.log('Chang isNew to false');
           customer.isNew = false;
           this.store.setCustomer(customerId, customer);
-          return this.router._sendEventToAgent(customer, null,'WELCOME')
+          return this.router._sendEventToAgent(customer, 'WELCOME')
             .catch(err => next(err));
         }
       })
@@ -74,7 +74,7 @@ class DialogueController {
     }
     console.log('Continue Customer: ', req.params.id);
 
-    const response = await this.store.getOrCreateCustomer(req.params.id)
+    const output = await this.store.getOrCreateCustomer(req.params.id)
       .then(customer => {
         // If new, throw error
         if (customer.isNew) {
@@ -84,11 +84,14 @@ class DialogueController {
         return this.router._routeCustomer(req.body.text,customer,req.params.id);
       })
       .catch(err => next(err));
+
+      console.log(output);
     
       res.status(200).json({
         status: 'success',
         data: {
-            response: response,
+            response: output.reply,
+            param: output.param
         },
       });
 

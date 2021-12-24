@@ -37,37 +37,49 @@ class MessageRouter {
       return this._sendEventToAgent(customer, text, 'WELCOME');
     }
 
+    let output = {};
+
     return this._decideCustomerAction(text, customer)
       .then(responses => {
         // get response from Dialogflow
         const response = responses[0];
         console.log(response);
-        console.log(response.queryResult.parameters.fields);
         const reply = response.queryResult.fulfillmentText;
         const detectedIntent = response.queryResult.intent.displayName;
+        const param = this._parseParameters(response.queryResult.parameters.fields);
+        output = {reply,param};
+
         if(detectedIntent === 'Default Fallback Intent'){
           console.log('Could not understand, try again');
         }
-        else if(detectedIntent==='Default Welcome Intent'){
-          customer.story = CustomerStore.DURING_STORY;
-          this.customerStore.setCustomer(customerId, customer);
+        else if(detectedIntent==='Default Welcome Intent' || detectedIntent==='Start Story'){
+          customer.story = CustomerStore.NEXT_STORY;
+          //this.customerStore.setCustomer(customerId, customer);
         }
         else if(detectedIntent==='Done'){
           customer.story = CustomerStore.AFTER_STORY;
-          this.customerStore.setCustomer(customerId, customer);
+          //this.customerStore.setCustomer(customerId, customer);
         }
         // All required parameters are present, move on to the next event
         else if (response.queryResult.allRequiredParamsPresent){
+          console.log('Go to next story');
+          customer.story = CustomerStore.NEXT_STORY;
           this._toNextEvent (customerId, customer)
             .catch(err => {
               console.log('conversation completed, wrapping up');
               customer.story = CustomerStore.AFTER_STORY;
-              this.customerStore.setCustomer(customerId, customer);
+              //this.customerStore.setCustomer(customerId, customer);
             });
         }
-        return reply;
+        else {
+          console.log('Continue story');
+          customer.story = CustomerStore.CONTINUE_STORY;
+        }
+        return this.customerStore.setCustomer(customerId, customer).then(()=> {return output;});
       })
-
+      .catch(err => {
+        throw new Error(err);
+      })
   }
 
   // Decide customer action and returns agent response
@@ -76,9 +88,14 @@ class MessageRouter {
       console.log('BEFORE_STORY');
       return this._sendTextToAgent(customer, text);
     }
-    else if(customer.story===CustomerStore.DURING_STORY){
-      console.log('DURING_STORY: sending event',customer.events[0]);
-      return this._sendEventToAgent(customer, text, customer.events[0]);
+    else if(customer.story===CustomerStore.NEXT_STORY){
+      console.log('NEXT_STORY: sending event',customer.events[0]);
+      this._sendEventToAgent(customer, customer.events[0]);
+      return this._sendTextToAgent(customer, text);
+    }
+    else if(customer.story===CustomerStore.CONTINUE_STORY){
+      console.log('CONTINUE_STORY');
+      return this._sendTextToAgent(customer, text);
     }
     else{
       console.log('DONE');
@@ -87,16 +104,12 @@ class MessageRouter {
   }
 
   // Uses the Dialogflow client to send a event to the agent
-  _sendEventToAgent (customer, input, eventName) {
-    console.log(`Sending ${eventName} event with input "${input}" to agent`);
+  _sendEventToAgent (customer, eventName) {
+    console.log(`Sending ${eventName} event to agent`);
     return this.client.detectIntent({
       // Use the customer ID as Dialogflow's session ID
       session: this.client.sessionPath(this.projectId, customer.id),
       queryInput: {
-        text:{
-          text: input,
-          languageCode: 'en'
-        },
         event: {
           name: eventName,
           languageCode: 'en'
@@ -142,6 +155,29 @@ class MessageRouter {
     // Remove event from current customer
     customer.events.shift();
     return this.customerStore.setCustomer(customerId, customer);
+  }
+
+  // Parse parameters from agent
+  _parseParameters (p) {
+    let result = [];
+    console.log(p);
+    Object.keys(p).forEach(key => {
+      if(p[key]['kind'] === 'listValue'){
+        console.log(key + " -> " + p[key]['listValue']['values']);
+        let lst = [];
+        p[key]['listValue']['values'].forEach(a => {
+          lst.push(Object.values(a)[0]);
+        })
+        if (p[key]['listValue']['values'].length) result.push({'key': key, 'value': lst});
+      } else if (p[key]['kind'] === 'stringValue') {
+        console.log(key + " -> " + p[key]['stringValue']);
+        if (p[key]['stringValue']) result.push({'key': key, 'value': p[key]['stringValue']});
+      } else {
+        console.log(key + " -> " + p[key]['structValue']);
+        if (p[key]['structValue']['fields']['name']) result.push({'key': key, 'value': p[key]['structValue']['fields']['name']['stringValue']});
+      }
+    })
+    return result;
   }
 
 }

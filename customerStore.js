@@ -13,8 +13,12 @@ class CustomerStore {
     return 'BEFORE';
   }
 
-  static get DURING_STORY () {
-    return 'DURING';
+  static get CONTINUE_STORY () {
+    return 'CONTINUE';
+  }
+
+  static get NEXT_STORY () {
+    return 'NEXT';
   }
 
   static get AFTER_STORY () {
