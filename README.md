@@ -11,7 +11,7 @@ Conversational agent built with Dialogflow, Node.js and Firebase to explore narr
 		- [Get Response](#get-response)
 		- [Save Location](#save-location)
 	- [Local Hosting:](#local-hosting)
-	- [Deployment (TBD):](#deployment-tbd)
+	- [Deployment:](#deployment)
 	- [References:](#references)
 
 ## Basics
@@ -128,7 +128,7 @@ Example response body:
 2. Configure `.env` file and download `serviceAccountKey.json` file from Dialogflow Console
 3. Run `node app.js` in terminal
 
-## Deployment (TBD):
+## Deployment:
 Hosting on Heroku
 
 ## References:
